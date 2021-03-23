@@ -1,4 +1,21 @@
-class LibrsvgAT2503 < Formula
+class RustRequirement < Requirement
+  fatal true
+  satisfy(build_env: false) { which "rustc" }
+  satisfy(build_env: false) { which "rustup" }
+  satisfy(build_env: false) { which "cargo" }
+
+  system "rustup install stable"
+  system "rustup default stable"
+
+  def message
+    <<~EOS
+    An exisiting rustc and cargo dependency is required.
+    EOS
+  end
+
+end
+
+class Librsvg < Formula
   desc "Library to render SVG files using Cairo"
   homepage "https://wiki.gnome.org/Projects/LibRsvg"
   url "https://download.gnome.org/sources/librsvg/2.50/librsvg-2.50.3.tar.xz"
@@ -7,15 +24,17 @@ class LibrsvgAT2503 < Formula
 
   depends_on "gobject-introspection" => :build
   depends_on "pkg-config" => :build
-  depends_on :rust => :build
+  depends_on RustRequirement => :build
   depends_on "cairo"
   depends_on "gdk-pixbuf"
   depends_on "glib"
   depends_on "pango"
 
-  conflicts_with "librsvg", because "it is the same formula with custom rust dep"
 
   def install
+    system "rustup install stable"
+    system "rustup default stable"
+
     args = %W[
       --disable-dependency-tracking
       --prefix=#{prefix}
